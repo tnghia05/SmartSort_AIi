@@ -1,0 +1,30 @@
+# YOLO Dataset Configuration for Waste Classification
+# This file defines the dataset structure and class names
+
+# Path to dataset root directory
+# Update this path when using the dataset
+path: /content/dataset  # For Google Colab
+# path: ./dataset  # For local training
+
+# Relative paths from dataset root
+train: images/train
+val: images/val
+
+# Class names (12 classes for waste classification model)
+names:
+  0: battery
+  1: biological
+  2: brown-glass
+  3: cardboard
+  4: clothes
+  5: green-glass
+  6: metal
+  7: paper
+  8: plastic
+  9: shoes
+  10: trash
+  11: white-glass
+
+# Number of classes
+nc: 12
+

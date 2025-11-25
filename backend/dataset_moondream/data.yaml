@@ -1,0 +1,18 @@
+path: .
+train: images/train
+val: images/val
+nc: 12
+names:
+  - battery
+  - biological
+  - brown-glass
+  - cardboard
+  - clothes
+  - green-glass
+  - metal
+  - paper
+  - plastic
+  - shoes
+  - trash
+  - white-glass
+

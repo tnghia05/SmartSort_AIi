@@ -1,0 +1,15 @@
+fastapi>=0.104.0
+uvicorn[standard]>=0.24.0
+python-multipart>=0.0.6
+ultralytics>=8.1.0
+pillow>=10.1.0
+numpy>=1.24.3
+opencv-python-headless>=4.8.0
+python-dotenv>=1.0.0
+torch>=2.0.0
+torchvision>=0.15.0
+requests>=2.31.0
+huggingface-hub>=0.20.0
+# CLIP for material classification (optional - install separately if needed)
+# git+https://github.com/openai/CLIP.git
+

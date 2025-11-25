@@ -1,0 +1,18 @@
+version: "2"
+# Lấy authtoken từ: https://dashboard.ngrok.com/get-started/your-authtoken
+# Sau đó chạy: ngrok config add-authtoken YOUR_TOKEN
+
+# Ngrok cả backend và web (cần thiết vì Mixed Content: HTTPS web không thể gọi HTTP backend)
+tunnels:
+  backend:
+    addr: 8000
+    proto: http
+    # Optional: thêm domain cố định nếu có ngrok paid plan
+    # domain: your-backend-domain.ngrok.app
+    
+  web:
+    addr: 5173
+    proto: http
+    # Optional: thêm domain cố định nếu có ngrok paid plan
+    # domain: your-web-domain.ngrok.app
+

@@ -1,0 +1,448 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+:root {
+  --green-900: #0f361f;
+  --green-700: #1b5e20;
+  --green-500: #2e7d32;
+  --green-400: #43a047;
+  --green-300: #66bb6a;
+  --green-200: #b7e0c6;
+  --green-100: #d9f2e2;
+  --green-50: #f2fbf6;
+  --gray-900: #1d1d1b;
+  --gray-600: #5f6660;
+  --gray-400: #909a91;
+  --surface: #f5faf6;
+  --card-bg: #ffffff;
+  --border-soft: rgba(46, 125, 50, 0.08);
+  --shadow-card: 0 25px 45px rgba(15, 54, 31, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: linear-gradient(180deg, #e8f5e9, #f8fffb);
+  min-height: 100vh;
+  color: var(--gray-900);
+  -webkit-font-smoothing: antialiased;
+}
+
+.app {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 20px 16px 40px;
+  max-width: 460px;
+  margin: 0 auto;
+}
+
+.app-header {
+  background: transparent;
+  padding: 0 0 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.brand-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: var(--green-100);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.brand-name {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.brand-tagline {
+  color: var(--gray-600);
+  font-size: 13px;
+}
+
+.header-right {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.status-container {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.status-item {
+  background: var(--card-bg);
+  border-radius: 14px;
+  padding: 8px 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  box-shadow: 0 10px 25px rgba(16, 94, 40, 0.08);
+}
+
+.status-dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.status-label {
+  font-size: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: var(--gray-400);
+  margin: 0;
+}
+
+.status-value {
+  margin: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--gray-900);
+}
+
+.reward-badge {
+  border: none;
+  background: var(--green-100);
+  color: var(--green-700);
+  border-radius: 999px;
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  box-shadow: inset 0 0 0 1px rgba(67, 160, 71, 0.15);
+}
+
+.reward-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  background: var(--green-200);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.reward-info {
+  display: flex;
+  flex-direction: column;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.reward-info strong {
+  font-size: 18px;
+  line-height: 1;
+}
+
+.app-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.card {
+  background: var(--card-bg);
+  border-radius: 28px;
+  padding: 18px;
+  box-shadow: var(--shadow-card);
+  border: 1px solid var(--border-soft);
+}
+
+.scan-card {
+  text-align: center;
+  padding: 24px;
+}
+
+.processing-state {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
+}
+
+.processing-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(46, 125, 50, 0.15);
+  border-radius: 999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.processing-wave {
+  position: absolute;
+  inset: 0;
+  width: 35%;
+  background: linear-gradient(90deg, rgba(46, 125, 50, 0), rgba(46, 125, 50, 0.9), rgba(46, 125, 50, 0));
+  animation: waveSlide 1.8s ease-in-out infinite;
+}
+
+@keyframes waveSlide {
+  0% { transform: translateX(-120%); }
+  50% { transform: translateX(50%); }
+  100% { transform: translateX(150%); }
+}
+
+.processing-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--green-700);
+}
+
+.processing-hint {
+  font-size: 13px;
+  color: var(--gray-600);
+}
+
+.result-state {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.result-label {
+  text-transform: uppercase;
+  font-size: 12px;
+  color: var(--gray-400);
+  letter-spacing: 0.8px;
+}
+
+.result-state h2 {
+  font-size: 26px;
+  margin: 0;
+  color: var(--gray-900);
+}
+
+.result-points {
+  font-size: 22px;
+  color: var(--green-500);
+  font-weight: 700;
+}
+
+.result-material {
+  font-size: 14px;
+  color: var(--gray-600);
+  font-weight: 600;
+}
+
+.result-guidance {
+  font-size: 14px;
+  color: var(--gray-600);
+  line-height: 1.5;
+}
+
+.embedded-summary {
+  margin-top: 18px;
+}
+
+.status-message {
+  background: var(--card-bg);
+  border-radius: 24px;
+  padding: 18px;
+  box-shadow: var(--shadow-card);
+}
+
+.status-success {
+  color: var(--green-700);
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.status-info {
+  color: var(--gray-600);
+  font-size: 13px;
+}
+
+.status-detected {
+  color: var(--green-500);
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+.status-no-detection {
+  color: var(--gray-600);
+  margin-left: 6px;
+}
+
+.camera-section,
+.results-section {
+  width: 100%;
+}
+
+.camera-wrapper {
+  position: relative;
+  width: 100%;
+}
+
+.reward-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 35, 15, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 200;
+  padding: 16px;
+}
+
+.reward-modal-content {
+  background: #fcfffd;
+  border-radius: 28px;
+  width: min(420px, 100%);
+  max-height: 80vh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 30px 70px rgba(0, 43, 7, 0.25);
+}
+
+.reward-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  border-bottom: 1px solid rgba(67, 160, 71, 0.1);
+  gap: 12px;
+}
+
+.reward-modal-header button {
+  border: none;
+  background: var(--green-100);
+  color: var(--green-700);
+  padding: 8px 14px;
+  border-radius: 999px;
+  cursor: pointer;
+}
+
+.reward-summary {
+  display: flex;
+  gap: 16px;
+  padding: 20px;
+  border-bottom: 1px solid rgba(67, 160, 71, 0.08);
+  flex-wrap: wrap;
+}
+
+.reward-total {
+  flex: 1;
+}
+
+.reward-total-label {
+  font-size: 12px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  color: var(--gray-400);
+}
+
+.reward-total h2 {
+  font-size: 32px;
+  margin: 4px 0;
+  color: var(--green-700);
+}
+
+.reward-total-hint {
+  font-size: 13px;
+  color: var(--gray-600);
+}
+
+.reward-tip {
+  flex: 1;
+  background: var(--green-50);
+  border-radius: 18px;
+  padding: 14px;
+  font-size: 13px;
+  color: var(--green-700);
+}
+
+.reward-event-list {
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.reward-event {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--green-50);
+  border-radius: 18px;
+  padding: 12px 16px;
+  border: 1px solid rgba(46, 125, 50, 0.08);
+}
+
+.reward-event-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.reward-event-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 16px;
+  background: rgba(67, 160, 71, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+}
+
+.reward-reason {
+  margin: 0;
+  font-size: 14px;
+  color: var(--green-700);
+  font-weight: 600;
+}
+
+.reward-event small {
+  color: var(--gray-600);
+}
+
+.reward-points {
+  font-weight: 700;
+  color: var(--green-500);
+  font-size: 18px;
+}
+
+@media (max-width: 480px) {
+  .app {
+    padding: 16px 14px 32px;
+  }
+
+  .app-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .header-right {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+

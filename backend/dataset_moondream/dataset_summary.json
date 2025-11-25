@@ -1,0 +1,26 @@
+{
+  "dataset": "E:\\Code\\rac\\backend\\dataset_moondream",
+  "img_exts": [
+    ".jpg"
+  ],
+  "splits": {
+    "train": {
+      "images": 5576,
+      "labels": 5576,
+      "annotations": 19797,
+      "class_ids": {
+        "6": 390,
+        "7": 2157,
+        "8": 17250
+      }
+    },
+    "val": {
+      "images": 283,
+      "labels": 283,
+      "annotations": 717,
+      "class_ids": {
+        "8": 717
+      }
+    }
+  }
+}
