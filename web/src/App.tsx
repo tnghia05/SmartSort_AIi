@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { CameraView } from './components/CameraView';
 import { DetectionOverlay } from './components/DetectionOverlay';
 import { DetectionSummary } from './components/DetectionSummary';
@@ -211,6 +211,52 @@ function App() {
     }
     return 'idle';
   })();
+
+  const materialTags = useMemo(() => {
+    if (!lastScanDetections.length) {
+      return [];
+    }
+    const tagMap = new Map<string, { label: string; count: number }>();
+    lastScanDetections.forEach((det) => {
+      const material = det.material || getMaterialFromClassName(det.class);
+      if (!material) {
+        return;
+      }
+      const key = material.toLowerCase();
+      const label = formatMaterialName(material);
+      const existing = tagMap.get(key);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        tagMap.set(key, { label, count: 1 });
+      }
+    });
+    return Array.from(tagMap.entries()).map(([key, value]) => ({
+      key,
+      label: value.label,
+      count: value.count,
+    }));
+  }, [lastScanDetections]);
+
+  // Get all unique item names with counts for display at top
+  const allItemNames = useMemo(() => {
+    if (!lastScanDetections.length) {
+      return [];
+    }
+    const itemMap = new Map<string, { name: string; count: number }>();
+    lastScanDetections.forEach((det) => {
+      const formattedName = formatDetectionName(det.class);
+      // Extract base name (remove material suffix if present, e.g., "Chai nhựa (Nhựa)" -> "Chai nhựa")
+      const baseName = formattedName.split(' (')[0].trim();
+      const existing = itemMap.get(baseName);
+      if (existing) {
+        existing.count += 1;
+      } else {
+        itemMap.set(baseName, { name: baseName, count: 1 });
+      }
+    });
+    return Array.from(itemMap.values());
+  }, [lastScanDetections]);
 
 
   const getStatusColor = () => {
@@ -453,11 +499,32 @@ function App() {
           {scanState === 'result' && lastScanDetections[0] && (
             <div className="result-state">
               <p className="result-label">Scan Result</p>
-              <h2>{formatDetectionName(lastScanDetections[0].class)}</h2>
-              {(lastScanDetections[0].material || getMaterialFromClassName(lastScanDetections[0].class)) && (
-                <p className="result-material">
-                  Chất liệu: {formatMaterialName(lastScanDetections[0].material || getMaterialFromClassName(lastScanDetections[0].class))}
-                </p>
+              <h2>
+                {allItemNames.length > 0
+                  ? allItemNames
+                      .map((item) => (item.count > 1 ? `${item.name} (x${item.count})` : item.name))
+                      .join(' • ')
+                  : formatDetectionName(lastScanDetections[0].class)}
+              </h2>
+              {materialTags.length > 0 && (
+                <>
+                  <p className="result-material">
+                    Chất liệu:{' '}
+                    {materialTags
+                      .map((tag) => (tag.count > 1 ? `${tag.label} (x${tag.count})` : tag.label))
+                      .join(' • ')}
+                  </p>
+                  {materialTags.length > 1 && (
+                    <div className="result-material-tags">
+                      {materialTags.map((tag) => (
+                        <span className="material-chip" key={tag.key}>
+                          {tag.label}
+                          {tag.count > 1 && <span className="chip-count">x{tag.count}</span>}
+                        </span>
+                      ))}
+                    </div>
+                  )}
+                </>
               )}
               <p className="result-points">
                 +{lastScanPoints || GROUP_POINT_HINT[lastScanDetections[0].class_group] || 1} Điểm xanh

@@ -16,6 +16,43 @@ const CLASS_COLORS: Record<string, string> = {
   'residual': '#9E9E9E',
 };
 
+const BOX_SHRINK_RATIO = 0.06;
+const BOX_SHRINK_MAX = 0.08;
+const BOX_SHRINK_MIN = 0.01;
+const BOX_SHRINK_PIXEL_BUFFER = 0.005; // ~0.5%
+
+function shrinkBBox(bbox: Detection['bbox']) {
+  const width = bbox.x2 - bbox.x1;
+  const height = bbox.y2 - bbox.y1;
+  if (width <= 0 || height <= 0) {
+    return bbox;
+  }
+  let shrinkX = Math.min(Math.max(width * BOX_SHRINK_RATIO, BOX_SHRINK_MIN), BOX_SHRINK_MAX);
+  let shrinkY = Math.min(Math.max(height * BOX_SHRINK_RATIO, BOX_SHRINK_MIN), BOX_SHRINK_MAX);
+
+  shrinkX = Math.max(shrinkX, BOX_SHRINK_PIXEL_BUFFER);
+  shrinkY = Math.max(shrinkY, BOX_SHRINK_PIXEL_BUFFER);
+
+  if (width <= shrinkX * 2) {
+    shrinkX = width * 0.1;
+  }
+  if (height <= shrinkY * 2) {
+    shrinkY = height * 0.1;
+  }
+
+  const next = {
+    x1: Math.max(0, Math.min(1, bbox.x1 + shrinkX)),
+    y1: Math.max(0, Math.min(1, bbox.y1 + shrinkY)),
+    x2: Math.max(0, Math.min(1, bbox.x2 - shrinkX)),
+    y2: Math.max(0, Math.min(1, bbox.y2 - shrinkY)),
+  };
+
+  if (next.x2 <= next.x1 || next.y2 <= next.y1) {
+    return bbox;
+  }
+  return next;
+}
+
 export function DetectionOverlay({ detections, videoWidth, videoHeight }: DetectionOverlayProps) {
   const [containerSize, setContainerSize] = useState({ width: 0, height: 0 });
   const overlayRef = useRef<HTMLDivElement>(null);
@@ -70,7 +107,8 @@ export function DetectionOverlay({ detections, videoWidth, videoHeight }: Detect
     return (
       <div ref={overlayRef} className="detection-overlay">
         {detections.map((detection, index) => {
-          const { bbox, class: className, class_group, confidence } = detection;
+          const { class: className, class_group, confidence } = detection;
+          const bbox = shrinkBBox(detection.bbox);
           const color = CLASS_COLORS[class_group] || '#9E9E9E';
           
           const style: React.CSSProperties = {
@@ -120,7 +158,8 @@ export function DetectionOverlay({ detections, videoWidth, videoHeight }: Detect
   return (
     <div ref={overlayRef} className="detection-overlay">
       {detections.map((detection, index) => {
-        const { bbox, class: className, class_group, confidence } = detection;
+        const { class: className, class_group, confidence } = detection;
+        const bbox = shrinkBBox(detection.bbox);
         const color = CLASS_COLORS[class_group] || '#9E9E9E';
         
         // Use normalized bbox (0-1) directly as percentages

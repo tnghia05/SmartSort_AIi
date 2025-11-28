@@ -9,6 +9,12 @@ interface CameraViewProps {
   onStreamChange?: (active: boolean) => void;
 }
 
+const ROI_RATIO = 0.85;
+const FRAME_INTERVAL_MS = 40; // ~25 FPS
+const MOTION_SAMPLE_STEP = 16; // sample every 16 pixels per channel for diff
+const MOTION_THRESHOLD = 10; // average diff (0-255 scale) to treat as motion
+const HEARTBEAT_INTERVAL_MS = 1200; // always send at least once per ~1.2s
+
 export function CameraView({ onFrame, onError, onVideoSizeChange, overlay, onStreamChange }: CameraViewProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -17,6 +23,8 @@ export function CameraView({ onFrame, onError, onVideoSizeChange, overlay, onStr
   const streamRef = useRef<MediaStream | null>(null);
   const frameIntervalRef = useRef<number | null>(null);
   const videoSizeRef = useRef({ width: 0, height: 0 });
+  const lastFrameDataRef = useRef<Uint8ClampedArray | null>(null);
+  const lastFrameTimestampRef = useRef<number>(0);
 
   useEffect(() => {
     return () => {
@@ -102,6 +110,8 @@ export function CameraView({ onFrame, onError, onVideoSizeChange, overlay, onStr
 
     setIsStreaming(false);
     onStreamChange?.(false);
+    lastFrameDataRef.current = null;
+    lastFrameTimestampRef.current = 0;
   };
 
   const startFrameCapture = () => {
@@ -109,6 +119,40 @@ export function CameraView({ onFrame, onError, onVideoSizeChange, overlay, onStr
     const canvas = canvasRef.current;
     
     if (!video || !canvas) return;
+
+    const shouldSendFrame = (imageData: ImageData) => {
+      const now = Date.now();
+      const lastSentAt = lastFrameTimestampRef.current;
+      const lastFrame = lastFrameDataRef.current;
+
+      if (!lastFrame || lastFrame.length !== imageData.data.length) {
+        lastFrameDataRef.current = new Uint8ClampedArray(imageData.data);
+        lastFrameTimestampRef.current = now;
+        return true;
+      }
+
+      let diffSum = 0;
+      let samples = 0;
+      const step = MOTION_SAMPLE_STEP * 4; // RGBA
+      const data = imageData.data;
+
+      for (let i = 0; i < data.length; i += step) {
+        diffSum += Math.abs(data[i] - lastFrame[i]); // chỉ xét kênh R (đủ để phát hiện)
+        samples += 1;
+      }
+
+      const avgDiff = samples > 0 ? diffSum / samples : 0;
+      const motionDetected = avgDiff >= MOTION_THRESHOLD;
+      const heartbeatDue = now - lastSentAt >= HEARTBEAT_INTERVAL_MS;
+
+      if (motionDetected || heartbeatDue) {
+        lastFrame.set(imageData.data);
+        lastFrameTimestampRef.current = now;
+        return true;
+      }
+
+      return false;
+    };
 
     const captureFrame = () => {
       if (video.readyState === video.HAVE_ENOUGH_DATA) {
@@ -147,18 +191,19 @@ export function CameraView({ onFrame, onError, onVideoSizeChange, overlay, onStr
         const scaledCtx = scaledCanvas.getContext('2d');
         if (scaledCtx) {
           scaledCtx.drawImage(canvas, 0, 0, scaledWidth, scaledHeight);
+          const imageData = scaledCtx.getImageData(0, 0, scaledWidth, scaledHeight);
+          if (!shouldSendFrame(imageData)) {
+            return;
+          }
           // Quality 0.7 for balance between file size and image quality
           const base64 = scaledCanvas.toDataURL('image/jpeg', 0.7);
-          // Remove data URL prefix
           const base64Data = base64.split(',')[1];
-          // console.log('Frame captured, size:', base64Data.length, 'bytes');
           onFrame(base64Data);
         }
       }
     };
 
-    // Capture at ~25 FPS (~40ms interval) để tận dụng GPU 2050 khi REALTIME_MAX_FPS=30
-    frameIntervalRef.current = window.setInterval(captureFrame, 40);
+    frameIntervalRef.current = window.setInterval(captureFrame, FRAME_INTERVAL_MS);
   };
 
   return (
@@ -170,6 +215,13 @@ export function CameraView({ onFrame, onError, onVideoSizeChange, overlay, onStr
           playsInline
           muted
           className={`camera-video ${isStreaming ? 'is-visible' : ''}`}
+        />
+        <div
+          className="camera-roi"
+          style={{
+            width: `${ROI_RATIO * 100}%`,
+            height: `${ROI_RATIO * 100}%`,
+          }}
         />
         {!isStreaming && (
           <div className="camera-placeholder">

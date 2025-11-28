@@ -22,8 +22,12 @@ export interface Detection {
   class: string;
   class_group: string;
   class_original?: string;
+  material?: string;
   confidence: number;
   guidance?: DisposalGuidance;
+  bbox_area?: number;
+  aspect_ratio?: number;
+  large_bbox?: boolean;
 }
 
 export interface GroupSummaryItem {

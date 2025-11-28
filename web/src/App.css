@@ -250,6 +250,30 @@ body {
   font-weight: 600;
 }
 
+.result-material-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.material-chip {
+  background: var(--green-50);
+  color: var(--green-700);
+  border-radius: 999px;
+  padding: 4px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.material-chip .chip-count {
+  font-size: 12px;
+  color: var(--green-600);
+}
+
 .result-guidance {
   font-size: 14px;
   color: var(--gray-600);
